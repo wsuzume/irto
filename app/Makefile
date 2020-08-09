@@ -8,7 +8,7 @@ image: Dockerfile
 
 .PHONY: shell
 shell:
-	docker container run -it --rm -v ${PWD}:/go/src/work ${IMAGE}
+	docker container run -it --rm -p 8080:8080 -v ${PWD}:/go/src/work ${IMAGE}
 
 # clean up all stopped containers
 .PHONY: clean
