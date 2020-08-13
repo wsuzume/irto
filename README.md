@@ -56,7 +56,7 @@ $ tree
         └── index.html
 ```
 
-## ART-0040/json-request
+## ART-0040/json-api
 
 ```
 $ tree
