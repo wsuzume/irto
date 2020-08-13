@@ -15,13 +15,16 @@
 .develop-table-column {
     display: table-cell;
     border: 1px solid black;
-    width: 32em;
 }
 
 .develop-table-form {
     border: 1px solid black;
     margin: 0.1em;
     padding: 1em;
+}
+.develop-table-cell {
+    border: 1px solid black;
+    margin: 0.1em;
 }
 -->
 </style>
@@ -45,26 +48,102 @@
     <div class="develop-table">
         <div id="message_sender" class="develop-table-column">
             <h3 style="margin:0.7em;">User Authentication</h3>
-            <form class="develop-table-form" action="/signup" method="post">
+            <form name="signup-form" class="develop-table-form" action="/signup" method="post">
                 <h4 style="margin:0.2em;">Sign up</h4>
                 <input name="username" type="text" placeholder="username" />
                 <input name="password" type="text" placeholder="password" />
                 <input name="password_confirm" type="text" placeholder="re-enter password" />
                 <button type="submit">Send</button>
                 <button type="reset">Reset</button>
+                <button type="button" onclick="postSignUp()">Send JSON</button>
             </form>
-            <form class="develop-table-form" action="/signin" method="post">
+            <script>
+                function postSignUp() {
+                    let form = document.forms["signup-form"];
+                    let obj = {
+                        username: form.elements["username"].value, 
+                        password: form.elements["password"].value, 
+                        password_confirm: form.elements["password_confirm"].value, 
+                    };
+                    postJSON("/api/signup", JSON.stringify(obj));
+                }
+            </script>
+            <form name="signin-form" class="develop-table-form" action="/signin" method="post">
                 <h4 style="margin:0.2em;">Sign in</h4>
                 <input name="username" type="text" placeholder="username" />
                 <input name="password" type="text" placeholder="password" />
                 <button type="submit">Send</button>
                 <button type="reset">Reset</button>
+                <button type="button" onclick="postSignIn()">Send JSON</button>
             </form>
-            <form class="develop-table-form" action="/signout" method="post">
+            <script>
+                function postSignIn() {
+                    let form = document.forms["signin-form"];
+                    let obj = {
+                        username: form.elements["username"].value, 
+                        password: form.elements["password"].value, 
+                    };
+                    postJSON("/api/signin", JSON.stringify(obj));
+                }
+            </script>
+            <form name="signout-form" class="develop-table-form" action="/signout" method="post">
                 <h4 style="margin:0.2em;">Sign out</h4>
                 <button type="submit">Sign out</button>
+                <button type="button" onclick="postSignOut()">Send JSON</button>
             </form>
+            <script>
+                function postSignOut() {
+                    postJSON("/api/signout", null);
+                }
+            </script>
+        </div>
+        <div id="message_viewer" class="develop-table-column">
+            <div class="develop-table-cell">
+                <h3 style="margin:0.7em;">POST request to Server</h3>
+                <div style="margin:0.7em;">
+                    <div id="post-url-viewer"></div>
+                    <div id="post-message-viewer"></div>
+                </div>
+            </div>
+        </div>
+        <div id="message_viewer" class="develop-table-column">
+            <div class="develop-table-cell">
+                <h3 style="margin:0.7em;">Response from Server</h3>
+                <div style="margin:0.7em;">
+                    <div id="response-success-viewer"></div>
+                    <div id="response-status-viewer"></div>
+                    <div id="response-json-viewer"></div>
+                </div>
+            </div>
         </div>
     </div>
 </body>
+<script>
+var post_url = document.getElementById("post-url-viewer");
+var post_message = document.getElementById("post-message-viewer");
+
+var response_success = document.getElementById("response-success-viewer");
+var response_status = document.getElementById("response-status-viewer");
+var response_json = document.getElementById("response-json-viewer");
+
+function postJSON(url, data) {
+    let req = new XMLHttpRequest();
+    req.open("POST", url);
+    req.setRequestHeader("Content-Type", "application/json");
+    req.responseType = "json";
+    req.onload = () => {
+        response_success.innerHTML = "Send Success";
+        response_status.innerHTML = req.status;
+        response_json.innerHTML = JSON.stringify(req.response);
+    };
+    req.onerror = () => {
+        response_success.innerHTML = "Send Error";
+        response_status.innerHTML = req.status;
+        response_json.innerHTML = JSON.stringify(req.response);
+    };
+    post_url.innerHTML = url;
+    post_message.innerHTML = data;
+    req.send(data);
+}
+</script>
 </html>
